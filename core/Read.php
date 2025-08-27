@@ -4,12 +4,19 @@
         public function __construct(private PDO $db) {}
         public function readAll() {
             $stmt = $this->db->query('SELECT * FROM users');
-            return $stmt->fetchAll();
+            $data = $stmt->fetchAll();
+            foreach ($data as &$usersData) {
+                $usersData['is_available'] = (bool) $usersData['is_available'];
+            }
+            unset($usersData);
+            return $data;
         }
         public function read($id) {
             $stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
-            return $stmt->fetch();
+            $data = $stmt->fetch();
+            $data['is_available'] = (bool) $data['is_available'];       
+            return $data;
         }
     }
