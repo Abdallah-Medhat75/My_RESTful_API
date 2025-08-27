@@ -9,7 +9,7 @@
 
     $url = explode('/', $_SERVER['REQUEST_URI']);
     $tableName = array_key_exists(4, $url) ? $url[4] : NULL;
-    $id = array_key_exists(5, $url) ? $url[5] : NULL;
+    $ids = array_key_exists(5, $url) ? explode(',', $url[5]) : NULL;
     $operation = array_key_exists(6, $url) ? $url[6] : NULL;
 
     $connect = new connect('mysql:host=localhost;dbname=restful_api;charset=utf8mb4', 'root', '');
@@ -21,5 +21,5 @@
     $delete = new Delete($dbConnection);
 
     $serve = new Controller($read, $create, $update, $delete);
-    $serve->serve($_SERVER['REQUEST_METHOD'], $id, $operation);
+    $serve->serve($_SERVER['REQUEST_METHOD'], $ids, $operation);
 

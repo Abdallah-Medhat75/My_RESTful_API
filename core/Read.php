@@ -11,9 +11,19 @@
             unset($usersData);
             return $data;
         }
-        public function read($id) {
+        public function read($ids) {
+            if (count($ids) > 1) {
+                $usersData = [];
+                foreach ($ids as $id) {
+                    $stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
+                    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+                    $stmt->execute();
+                    $usersData[] = $stmt->fetch();
+                }
+                return $usersData;
+            }
             $stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
-            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmt->bindValue(':id', $ids[0], PDO::PARAM_INT);
             $stmt->execute();
             $data = $stmt->fetch();
             $data['is_available'] = (bool) $data['is_available'];       

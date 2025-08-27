@@ -12,28 +12,39 @@
                     break;
             }
         }
-        private function serveSpec($method, $id) {
-            switch($method) {
-                case 'GET':
-                    echo json_encode($this->read->read($id));
-                    break;
-            }
-        }
-        private function serveProcessSpec($id, $operation) {
+        private function serveProcessSpec($ids, $operation) {
             switch($operation) {
                 case 'update':
-                    echo json_encode(['Update_Success' => "{$this->update->update($id)} Rows Has Been Updated Successfully"]);
+                    echo json_encode(['Update_Success' => "{$this->update->update($ids)} Rows Has Been Updated Successfully"]);
                     break;
                 case 'delete':
-                    echo json_encode(['Delete_Success' => "{$this->delete->delete($id)} Rows Has Been Deleted Successfully"]);
+                    echo json_encode(['Delete_Success' => "{$this->delete->delete($ids)} Rows Has Been Deleted Successfully"]);
                     break;
             }
         }
-        public function serve(string $method, ?string $id, ?string $operation) {
-            if ($id && $operation) {
-                $this->serveProcessSpec($id, $operation);
-            } else if ($id) {
-                $this->serveSpec($method, $id);
+        private function serveProcessMultiple($ids, $operation = NULL) {
+            if ($operation == NULL) {
+                echo json_encode($this->read->read($ids));
+                exit;
+            }
+            switch($operation) {
+                case 'delete':
+                    echo json_encode(['delete_success' => "{$this->delete->delete($ids)} users has been deleted successfully"]);
+                    break;
+            }
+        }
+        private function serveSpec($method, $ids) {
+            switch($method) {
+                case 'GET':
+                    echo json_encode($this->read->read($ids));
+                    break;
+            }
+        }
+        public function serve(string $method, ?array $ids, ?string $operation) {
+            if ($ids && $operation) {
+                count($ids) > 1 ? $this->serveProcessMultiple($ids, $operation) : $this->serveProcessSpec($ids, $operation);
+            } else if ($ids) {
+                $this->serveSpec($method, $ids);
             } else {
                 $this->serveAll($method);
             }
